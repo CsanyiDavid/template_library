@@ -1,7 +1,8 @@
 #include <iostream>
+#include "vector.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    std::cout << "Hello, again!" << std::endl;
+    Vector<int> v;
+    v.reserve(10);
     return 0;
 }
