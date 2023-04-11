@@ -29,6 +29,8 @@ public:
     const T& operator[](int index) const {return m_a[index];}
 
     T& operator[](int index){return m_a[index];}
+
+    void push_back(const T& value);
 };
 
 template<typename T>
@@ -86,4 +88,15 @@ size_t Vector<T>::get_new_capacity(size_t new_size){
     }
     return new_capacity;
 }
+
+template<typename T>
+void Vector<T>::push_back(const T& value){
+    if(m_capacity == m_size){
+        size_t new_capacity{get_new_capacity(m_size+1)};
+        reserve(new_capacity);
+    }
+    m_a[m_size] = value;
+    ++m_size;
+}
+
 #endif
