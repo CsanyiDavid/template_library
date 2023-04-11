@@ -4,6 +4,7 @@
 #include<cstdlib>
 #include<limits>
 #include<algorithm>
+#include<initializer_list>
 
 template<typename T>
 class Vector{
@@ -15,6 +16,10 @@ private:
     size_t get_new_capacity(size_t new_size);
 public:
     Vector(size_t size=0, const T& value = T());
+
+    Vector(std::initializer_list<T> init);
+
+    ~Vector();
 
     size_t size() const {return m_size;}
 
@@ -45,10 +50,36 @@ Vector<T>::Vector(size_t size, const T& value)
 }
 
 template<typename T>
+Vector<T>::Vector(std::initializer_list<T> init)
+    : m_size{0}
+    , m_capacity{0}
+    , m_a{nullptr}
+{
+    size_t new_size{init.size()};
+    size_t new_capacity{get_new_capacity(new_size)};
+    reserve(new_capacity);
+    unsigned long long i{0};
+    typename std::initializer_list<T>::const_iterator it{init.begin()};
+    for(; it!=init.end(); ++it){
+        m_a[i] = *it;
+        ++i;
+    }
+    m_size = new_size;
+}
+
+template<typename T>
+Vector<T>::~Vector(){
+    std::cerr << "DESTRUCTION " << size() << std::endl;
+    if(m_a){
+        delete[] m_a;
+    }
+}
+
+template<typename T>
 void Vector<T>::reserve(size_t new_capacity){
     if(new_capacity > m_capacity){
         T* new_a{new T[new_capacity]{}};
-        for(unsigned int i=0; i<m_size; ++i){
+        for(unsigned long long i=0; i<m_size; ++i){
             new_a[i] = m_a[i];
         }
         if(m_a){
@@ -68,7 +99,7 @@ void Vector<T>::resize(size_t new_size, const T& value){
             size_t new_capacity{get_new_capacity(new_size)};
             reserve(new_capacity);
         }
-        for(unsigned int i=m_size; i<new_size; ++i){
+        for(unsigned long long i=m_size; i<new_size; ++i){
             m_a[i] = value;
         }
         m_size = new_size;

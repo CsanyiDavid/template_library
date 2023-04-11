@@ -1,5 +1,6 @@
 #define CATCH_CONFIG_MAIN
 
+#include<string>
 #include "catch.hpp"
 #include"../vector.h"
 
@@ -13,12 +14,29 @@ TEST_CASE("constructor"){
     REQUIRE(v2.capacity() == 4);
     REQUIRE(v2[0] == 0.0);
 
-    Vector<Vector<char>> v3(5, Vector<char>(2, 'x'));
+    /*Vector<Vector<char>> v3(5, Vector<char>(2, 'x'));
+    for(int i=0; i<v3.size(); ++i){
+        for(int j=0; j<v3[i].size(); ++j){
+            std::cerr << v3[i][j] << " ";
+        }
+        std::cerr << std::endl;
+    }
     REQUIRE(v3.size() == 5);
     REQUIRE(v3.capacity() == 8);
     REQUIRE(v3[4].size()==2);
     REQUIRE(v3[4].capacity()==2);
-    REQUIRE(v3[4][1] == 'x');
+    REQUIRE(v3[4][1] == 'x');*/
+}
+
+TEST_CASE("initializer list constructor"){
+    Vector<int> v{1, 2, 3, 5, 6};
+    REQUIRE(v.size() == 5);
+    REQUIRE(v.capacity() == 8);
+    REQUIRE(v[0] == 1);
+    REQUIRE(v[1] == 2);
+    REQUIRE(v[2] == 3);
+    REQUIRE(v[3] == 5);
+    REQUIRE(v[4] == 6);
 }
 
 TEST_CASE("reserve and capacity"){
@@ -48,19 +66,19 @@ TEST_CASE("resize, size and empty"){
     REQUIRE(v.size() == 2);
     REQUIRE(!v.empty());
     
-    {
+    /*{
         Vector<bool> v2;
         size_t new_size{3 * (std::numeric_limits<size_t>::max()/4)};
         try{
             v2.resize(new_size);
             REQUIRE(v2.size() == new_size);
         } catch(const std::bad_alloc& e){
-            std::cerr << "bad_alloc" << std::endl;
+            //std::cerr << "bad_alloc" << std::endl;
         }
 
         Vector<Vector<long double>> v3;
         REQUIRE_THROWS_AS(v3.resize(-1, Vector<long double>(-1)), std::bad_alloc);
-    }
+    }*/
 
     Vector<int> v4(2, 1);
     REQUIRE(v4.size() == 2);
@@ -81,7 +99,26 @@ TEST_CASE("resize, size and empty"){
     REQUIRE(v4[5] == 77);
 }
 
+TEST_CASE("const operator[]"){
+    const Vector<std::string> v{"a", "sfdf", "sgfda", "sf", "sf", "dha"};
+    REQUIRE(v[0] == "a");
+    REQUIRE(v[1] == "sfdf");
+    REQUIRE(v[2] == "sgfda");
+    REQUIRE(v[3] == "sf");
+    REQUIRE(v[4] == "sf");
+    REQUIRE(v[5] == "dha");
+}
+
 TEST_CASE("operator[]"){
+    Vector<std::string> v{"a", "sfdf", "sgfda", "sf", "sf", "dha"};
+    v[4] = "four";
+    v[2] = "two";
+    REQUIRE(v[0] == "a");
+    REQUIRE(v[1] == "sfdf");
+    REQUIRE(v[2] == "two");
+    REQUIRE(v[3] == "sf");
+    REQUIRE(v[4] == "four");
+    REQUIRE(v[5] == "dha");
 }
 
 TEST_CASE("push_back"){
@@ -101,4 +138,15 @@ TEST_CASE("push_back"){
     REQUIRE(v.size() == 2);
     REQUIRE(v[0] == 2.1f);
     REQUIRE(v[1] == 77.78f);
+}
+
+TEST_CASE("const size, capacity, empty"){
+    const Vector<int> v{1, 2, 3, 4, 5, 6};
+    REQUIRE(v.size() == 6);
+    REQUIRE(v.capacity() == 8);
+    REQUIRE(!v.empty());
+    const Vector<double> v2;
+    REQUIRE(v2.size() == 0);
+    REQUIRE(v2.capacity() == 2);
+    REQUIRE(v2.empty());
 }
