@@ -14,18 +14,12 @@ TEST_CASE("constructor"){
     REQUIRE(v2.capacity() == 4);
     REQUIRE(v2[0] == 0.0);
 
-    /*Vector<Vector<char>> v3(5, Vector<char>(2, 'x'));
-    for(int i=0; i<v3.size(); ++i){
-        for(int j=0; j<v3[i].size(); ++j){
-            std::cerr << v3[i][j] << " ";
-        }
-        std::cerr << std::endl;
-    }
+    Vector<Vector<char>> v3(5, Vector<char>(2, 'x'));
     REQUIRE(v3.size() == 5);
     REQUIRE(v3.capacity() == 8);
     REQUIRE(v3[4].size()==2);
     REQUIRE(v3[4].capacity()==2);
-    REQUIRE(v3[4][1] == 'x');*/
+    REQUIRE(v3[4][1] == 'x');
 }
 
 TEST_CASE("initializer list constructor"){
@@ -37,6 +31,12 @@ TEST_CASE("initializer list constructor"){
     REQUIRE(v[2] == 3);
     REQUIRE(v[3] == 5);
     REQUIRE(v[4] == 6);
+}
+
+TEST_CASE("copy constructor"){
+    Vector<Vector<int>> v(5, Vector<int> (3, 1));
+    Vector<Vector<int>> copy{v};
+    REQUIRE(v == copy);
 }
 
 TEST_CASE("reserve and capacity"){
@@ -149,4 +149,30 @@ TEST_CASE("const size, capacity, empty"){
     REQUIRE(v2.size() == 0);
     REQUIRE(v2.capacity() == 2);
     REQUIRE(v2.empty());
+}
+
+TEST_CASE("operator="){
+    Vector<int> v1{1, 2, 3, 7, 8};
+    Vector<int> v2{3, 4, 4, 8, 9, 10};
+    Vector<int> v3(15, 3);
+    v3 = v1 = v2;
+    REQUIRE(v1.size() == v2.size());
+    REQUIRE(v3.size() == v2.size());
+    for(unsigned int i=0; i<v1.size(); ++i){
+        REQUIRE(v1[i] == v2[i]);
+        REQUIRE(v3[i] == v2[i]);
+    }
+}
+
+TEST_CASE("operator== and operator!="){
+    Vector<Vector<std::string>> v1(10, Vector<std::string> (5, "init"));
+    Vector<Vector<std::string>> v2(10, Vector<std::string> (5, "init"));
+    REQUIRE(v1 == v2);
+    REQUIRE_FALSE(v1 != v2);
+    v1[4][1] = "da";
+    REQUIRE_FALSE(v1 == v2);
+    REQUIRE(v1 != v2);
+    v2[4][1] = "da";
+        REQUIRE(v1 == v2);
+    REQUIRE_FALSE(v1 != v2);
 }

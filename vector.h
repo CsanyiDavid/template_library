@@ -19,6 +19,8 @@ public:
 
     Vector(std::initializer_list<T> init);
 
+    Vector(const Vector& other);
+
     ~Vector();
 
     size_t size() const {return m_size;}
@@ -36,6 +38,8 @@ public:
     T& operator[](int index){return m_a[index];}
 
     void push_back(const T& value);
+
+    Vector& operator=(const Vector& other);
 };
 
 template<typename T>
@@ -68,8 +72,16 @@ Vector<T>::Vector(std::initializer_list<T> init)
 }
 
 template<typename T>
+Vector<T>::Vector(const Vector& other)
+    : m_size{0}
+    , m_capacity{0}
+    , m_a{nullptr}
+{
+    *this = other;
+}
+
+template<typename T>
 Vector<T>::~Vector(){
-    std::cerr << "DESTRUCTION " << size() << std::endl;
     if(m_a){
         delete[] m_a;
     }
@@ -128,6 +140,38 @@ void Vector<T>::push_back(const T& value){
     }
     m_a[m_size] = value;
     ++m_size;
+}
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(const Vector<T>& other){
+    size_t new_capacity{other.capacity()};
+    reserve(new_capacity);
+    for(unsigned long long i=0; i<other.size(); ++i){
+        m_a[i] = other[i];
+    }
+    m_size = other.size();
+    return *this;
+}
+
+template<typename T>
+bool operator==(const Vector<T>& lhs, const Vector<T>& rhs){
+    bool equal{true};
+    if(lhs.size() != rhs.size()){
+        equal = false;
+    } else {
+        for(unsigned long long i=0; i<lhs.size(); ++i){
+            if(lhs[i] != rhs[i]){
+                equal = false;
+                break;
+            }
+        }
+    }
+    return equal;
+}
+
+template<typename T>
+bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs){
+    return !(lhs == rhs);
 }
 
 #endif
