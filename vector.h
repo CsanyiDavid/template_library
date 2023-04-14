@@ -40,6 +40,12 @@ public:
     void push_back(const T& value);
 
     Vector& operator=(const Vector& other);
+
+    class Iterator;
+
+    Iterator begin(){return m_a;}
+
+    Iterator end(){return m_a + size();}
 };
 
 template<typename T>
@@ -173,5 +179,47 @@ template<typename T>
 bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs){
     return !(lhs == rhs);
 }
+
+template<typename T>
+class Vector<T>::Iterator : public std::iterator<
+    std::random_access_iterator_tag, T, T, T*, T>
+{
+private:
+    T* m_ptr;
+public:
+    Iterator(T* ptr=nullptr) : m_ptr{ptr} {};
+
+    Iterator& operator++(){
+        ++m_ptr;
+        return *this;
+    }
+
+    Iterator operator++(int){
+        Iterator temp{*this};
+        ++(*this);
+        return temp;
+    }
+
+    Iterator& operator--(){
+        --m_ptr;
+        return *this;
+    }
+
+    Iterator operator--(int){
+        Iterator temp{*this};
+        --(*this);
+        return temp;
+    }
+    
+    T& operator*() {return *m_ptr;};
+    
+    friend bool operator==(const Vector<T>::Iterator& lhs, const Vector<T>::Iterator& rhs){
+        return lhs.m_ptr == rhs.m_ptr;
+    }
+
+    friend bool operator!=(const Vector<T>::Iterator& lhs, const Vector<T>::Iterator& rhs){
+        return !(lhs == rhs);
+    }
+};
 
 #endif
