@@ -1,7 +1,10 @@
 #define CATCH_CONFIG_MAIN
 
 #include<string>
-#include "catch.hpp"
+#include<algorithm>
+#include<ctime>
+#include<cstdlib>
+#include"catch.hpp"
 #include"../vector.h"
 
 TEST_CASE("constructor"){
@@ -173,6 +176,74 @@ TEST_CASE("operator== and operator!="){
     REQUIRE_FALSE(v1 == v2);
     REQUIRE(v1 != v2);
     v2[4][1] = "da";
-        REQUIRE(v1 == v2);
+    REQUIRE(v1 == v2);
     REQUIRE_FALSE(v1 != v2);
+}
+
+TEST_CASE("iterator"){
+    Vector<int> v{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int i{0};
+    Vector<int>::Iterator it;
+    for(it = v.begin(); it!=v.end(); ++it){
+        REQUIRE(*it == i);
+        ++i;
+    }
+    for(--it; it!=v.begin(); --it){
+        --i;
+        REQUIRE(*it == i);
+    }
+}
+
+TEST_CASE("iterator comparison"){
+    Vector<std::string> v(10, "init");
+    Vector<std::string>::Iterator it1{v.begin()};
+    auto it2{v.begin() + 3};
+    REQUIRE(it1 < it2);
+    REQUIRE(it1 <= it2);
+    REQUIRE_FALSE(it1 > it2);
+    REQUIRE_FALSE(it1 >= it2);
+    REQUIRE_FALSE(it1 == it2);
+    REQUIRE(it1 != it2);
+    it1 += 3;
+    REQUIRE_FALSE(it1 < it2);
+    REQUIRE(it1 <= it2);
+    REQUIRE_FALSE(it1 > it2);
+    REQUIRE(it1 >= it2);
+    REQUIRE(it1 == it2);
+    REQUIRE_FALSE(it1 != it2);
+    it1 += 1;
+    REQUIRE_FALSE(it1 < it2);
+    REQUIRE_FALSE(it1 <= it2);
+    REQUIRE(it1 > it2);
+    REQUIRE(it1 >= it2);
+    REQUIRE_FALSE(it1 == it2);
+    REQUIRE(it1 != it2);
+}
+
+TEST_CASE("iterator +, -, +=, -="){
+    Vector<int> v{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    Vector<int>::Iterator it{v.begin()};
+    REQUIRE(*it == 0);
+    it = it + 5;
+    REQUIRE(*it == 5);
+    it += 2;
+    REQUIRE(*it == 7);
+    it -= 4;
+    REQUIRE(*it == 3);
+    it = it - 2;
+    REQUIRE(*it == 1);
+}
+
+TEST_CASE("std sort"){
+    Vector<int> v;
+    srand(std::time(NULL));
+    int n{500};
+    int max_value{100000};
+    for(int i=0; i<n; ++i){
+        v.push_back(rand()%max_value);
+    }
+    std::sort(v.begin(), v.end());
+    for(int i=1; i<n; ++i){
+        REQUIRE(v[i-1] <= v[i]);
+    }
 }

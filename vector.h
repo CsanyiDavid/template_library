@@ -182,11 +182,13 @@ bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs){
 
 template<typename T>
 class Vector<T>::Iterator : public std::iterator<
-    std::random_access_iterator_tag, T, T, T*, T>
+    std::random_access_iterator_tag, T, std::ptrdiff_t, T*, T>
 {
 private:
     T* m_ptr;
 public:
+    using difference_type = typename std::iterator<std::random_access_iterator_tag, T>::difference_type;
+
     Iterator(T* ptr=nullptr) : m_ptr{ptr} {};
 
     Iterator& operator++(){
@@ -213,13 +215,52 @@ public:
     
     T& operator*() {return *m_ptr;};
     
-    friend bool operator==(const Vector<T>::Iterator& lhs, const Vector<T>::Iterator& rhs){
+    friend bool operator==(const Iterator& lhs, const Iterator& rhs){
         return lhs.m_ptr == rhs.m_ptr;
     }
 
-    friend bool operator!=(const Vector<T>::Iterator& lhs, const Vector<T>::Iterator& rhs){
+    friend bool operator!=(const Iterator& lhs, const Iterator& rhs){
         return !(lhs == rhs);
     }
+
+    friend bool operator<(const Iterator& lhs, const Iterator& rhs){
+        return lhs.m_ptr < rhs.m_ptr;
+    }
+
+    friend bool operator<=(const Iterator& lhs, const Iterator& rhs){
+        return lhs.m_ptr <= rhs.m_ptr;
+    }
+
+    friend bool operator>(const Iterator& lhs, const Iterator& rhs){
+        return rhs<lhs;
+    }
+
+    friend bool operator>=(const Iterator& lhs, const Iterator& rhs){
+        return rhs <= lhs;
+    }
+
+    Iterator operator+(int value){
+        return this->m_ptr + value;
+    }
+
+    Iterator operator-(int value){
+        return this->m_ptr - value;
+    }
+
+    Iterator operator+=(int value){
+        this->m_ptr += value;
+        return *this;
+    }
+
+    Iterator operator-=(int value){
+        this->m_ptr -= value;
+        return *this;
+    }
+
+    difference_type operator-(Iterator other){
+        return m_ptr - other.m_ptr;
+    }
 };
+
 
 #endif
