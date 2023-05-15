@@ -247,3 +247,25 @@ TEST_CASE("std sort"){
         REQUIRE(v[i-1] <= v[i]);
     }
 }
+
+TEST_CASE("move assignment"){
+    Vector<int> v1{0, 1, 2, 3, 4};
+    Vector<int> v2;
+    REQUIRE(v1.size() == 5);
+    REQUIRE(v2.size() == 0);
+    REQUIRE(v1.capacity() == 8);
+    v2 = std::move(v1);
+    REQUIRE(v1.size() == 0);
+    REQUIRE(v2.size() == 5);
+    REQUIRE(v2.capacity() == 8);
+}
+
+TEST_CASE("move constructor"){
+    Vector<int> v1{0, 1, 2, 3, 4};
+    REQUIRE(v1.size() == 5);
+    REQUIRE(v1.capacity() == 8);
+    Vector<int> v2{std::move(v1)};
+    REQUIRE(v1.size() == 0);
+    REQUIRE(v2.size() == 5);
+    REQUIRE(v2.capacity() == 8);
+}

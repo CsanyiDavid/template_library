@@ -21,6 +21,8 @@ public:
 
     Vector(const Vector& other);
 
+    Vector(Vector&& other);
+
     ~Vector();
 
     size_t size() const {return m_size;}
@@ -41,11 +43,17 @@ public:
 
     Vector& operator=(const Vector& other);
 
+    Vector& operator=(Vector&& other);
+
     class Iterator;
 
     Iterator begin(){return m_a;}
 
     Iterator end(){return m_a + size();}
+
+    T& front(){ return m_a[0];}
+    T& back(){ return m_a[m_size-1];}
+    T* data(){ return m_a;}
 };
 
 template<typename T>
@@ -84,6 +92,17 @@ Vector<T>::Vector(const Vector& other)
     , m_a{nullptr}
 {
     *this = other;
+}
+
+template<typename T>
+Vector<T>::Vector(Vector&& other)
+{
+    m_size = other.m_size;
+    m_capacity = other.m_capacity;
+    m_a = other.m_a;
+    other.m_size = 0;
+    other.m_capacity = 0;
+    other.m_a = NULL;
 }
 
 template<typename T>
@@ -150,12 +169,29 @@ void Vector<T>::push_back(const T& value){
 
 template<typename T>
 Vector<T>& Vector<T>::operator=(const Vector<T>& other){
+    if(&other == this){
+        return *this;
+    }
     size_t new_capacity{other.capacity()};
     reserve(new_capacity);
     for(unsigned long long i=0; i<other.size(); ++i){
         m_a[i] = other[i];
     }
     m_size = other.size();
+    return *this;
+}
+
+template<typename T>
+Vector<T>& Vector<T>::operator=(Vector<T>&& other){
+    if(&other == this){
+        return *this;
+    }
+    m_size = other.m_size;
+    other.m_size = 0;
+    m_capacity = other.m_capacity;
+    other.m_capacity = 0;
+    m_a = other.m_a;
+    other.m_a = NULL;
     return *this;
 }
 
