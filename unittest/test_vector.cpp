@@ -269,3 +269,81 @@ TEST_CASE("move constructor"){
     REQUIRE(v2.size() == 5);
     REQUIRE(v2.capacity() == 8);
 }
+
+TEST_CASE("insert"){
+    Vector<int> v{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15};
+    Vector<int>::Iterator it;
+    it = v.insert(v.begin() + 4, 42);
+    REQUIRE(*it == 42);
+    it = v.insert(v.begin() + 16, 14);
+    REQUIRE(*it == 14);
+    it = v.insert(v.begin() + 0, -5);
+    REQUIRE(*it == -5);
+
+    Vector<int> target{-5, 0, 1, 2, 3, 42, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 15, 14};
+    for(unsigned int i=0; i<v.size(); ++i){
+        REQUIRE(v[i] == target[i]);
+    }
+}
+
+TEST_CASE("==, !="){
+    Vector<char> v1{'a', 'b', 'k'};
+    Vector<char> v2{'a', 'b'};
+    REQUIRE(v1 != v2);
+    REQUIRE_FALSE(v1 == v2);
+    v2.push_back('k');
+    REQUIRE_FALSE(v1 != v2);
+    REQUIRE(v1 == v2);
+    v2.push_back('k');
+    v1.push_back('l');
+    REQUIRE(v1 != v2);
+    REQUIRE_FALSE(v1 == v2);
+}
+
+TEST_CASE("<"){
+    Vector<int> v1{1, 2};
+    Vector<int> v2{1, 2};
+    REQUIRE_FALSE(v1 < v2);
+    v2.push_back(-1);
+    REQUIRE(v1 < v2);
+    v1.push_back(-1);
+    v1.push_back(3);
+    v2.push_back(4);
+    v1.push_back(100);
+    v2.push_back(3);
+    REQUIRE(v1 < v2);
+}
+
+TEST_CASE("<="){
+    Vector<int> v1{1, 2};
+    Vector<int> v2{1, 2};
+    REQUIRE(v1 <= v2);
+    v2.push_back(-1);
+    REQUIRE(v1 <= v2);
+    v1.push_back(-1);
+    v1.push_back(3);
+    v2.push_back(4);
+    v1.push_back(100);
+    v2.push_back(3);
+    REQUIRE(v1 <= v2);
+}
+
+TEST_CASE("std sort vector of vectors"){
+    Vector<Vector<int>> v{
+        {3, 3, 3},
+        {3, 2, 4},
+        {3, 3, 2},
+        {4, 5, 6},
+        {1, -1, -5}
+    };
+
+    std::sort(v.begin(), v.end());
+    Vector<Vector<int>> target{
+        {1, -1, -5},
+        {3, 2, 4},
+        {3, 3, 2},
+        {3, 3, 3},
+        {4, 5, 6}
+    };
+    REQUIRE(v == target);
+}

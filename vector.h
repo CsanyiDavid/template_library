@@ -54,6 +54,21 @@ public:
     T& front(){ return m_a[0];}
     T& back(){ return m_a[m_size-1];}
     T* data(){ return m_a;}
+
+    Iterator insert(Iterator it, const T& value);
+
+    template<typename S>
+    friend bool operator==(Vector<S> lhs, Vector<S> rhs);
+    template<typename S>
+    friend bool operator!=(Vector<S> lhs, Vector<S> rhs);
+    template<typename S>
+    friend bool operator<(Vector<S> lhs, Vector<S> rhs);
+    template<typename S>
+    friend bool operator<=(Vector<S> lhs, Vector<S> rhs);
+    template<typename S>
+    friend bool operator>(Vector<S> lhs, Vector<S> rhs);
+    template<typename S>
+    friend bool operator>=(Vector<S> lhs, Vector<S> rhs);
 };
 
 template<typename T>
@@ -196,24 +211,85 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& other){
 }
 
 template<typename T>
-bool operator==(const Vector<T>& lhs, const Vector<T>& rhs){
-    bool equal{true};
-    if(lhs.size() != rhs.size()){
-        equal = false;
+typename Vector<T>::Iterator Vector<T>::insert(Vector<T>::Iterator it, const T& value){
+    if(it == this->end()){
+        this->push_back(value);
+        return this->end()-1; 
     } else {
-        for(unsigned long long i=0; i<lhs.size(); ++i){
-            if(lhs[i] != rhs[i]){
-                equal = false;
-                break;
-            }
+        Vector<T>::Iterator it2{this->end()-1};
+        T last_value = std::move(*it2);
+        for(; it2>it; --it2){
+            *it2 = std::move(*(it2-1));
         }
+        *it2 = value;
+        std::ptrdiff_t dif = it - this->begin();
+        this->push_back(std::move(last_value));
+        return this->begin() + dif;
     }
-    return equal;
 }
 
 template<typename T>
-bool operator!=(const Vector<T>& lhs, const Vector<T>& rhs){
+bool operator==(Vector<T> lhs, Vector<T> rhs){
+    if(lhs.size() != rhs.size()) return false;
+    for(unsigned int i=0; i<lhs.size(); ++i){
+        if(lhs[i] != rhs[i]) return false;
+    }
+    return true;
+}
+
+template<typename T>
+bool operator!=(Vector<T> lhs, Vector<T> rhs){
     return !(lhs == rhs);
+}
+
+template<typename T>
+bool operator<(Vector<T> lhs, Vector<T> rhs){
+    typename Vector<T>::Iterator lhs_it{lhs.begin()};
+    typename Vector<T>::Iterator rhs_it{rhs.begin()};
+    while(lhs_it != lhs.end() and rhs_it != rhs.end()){
+        if(*lhs_it < *rhs_it){
+            return true;
+        } else if(*lhs_it > *rhs_it){
+            return false;
+        }
+        ++lhs_it;
+        ++rhs_it;
+    }
+    if(lhs_it == lhs.end() and rhs_it != rhs.end()){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+template<typename T>
+bool operator<=(Vector<T> lhs, Vector<T> rhs){
+    typename Vector<T>::Iterator lhs_it{lhs.begin()};
+    typename Vector<T>::Iterator rhs_it{rhs.begin()};
+    while(lhs_it != lhs.end() and rhs_it != rhs.end()){
+        if(*lhs_it < *rhs_it){
+            return true;
+        } else if(*lhs_it > *rhs_it){
+            return false;
+        }
+        ++lhs_it;
+        ++rhs_it;
+    }
+    if(lhs_it == lhs.end()){
+        return true;
+    } else {
+        return false;
+    }
+}
+
+template<typename T>
+bool operator>(Vector<T> lhs, Vector<T> rhs){
+    return rhs < lhs;
+}
+
+template<typename T>
+bool operator>=(Vector<T> lhs, Vector<T> rhs){
+    return rhs <= lhs;
 }
 
 template<typename T>
